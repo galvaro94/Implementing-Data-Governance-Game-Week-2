@@ -1,6 +1,6 @@
 {
   "name": "data-governance-game",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Data Governance Matching Game for GovEx Academy",
   "type": "module",
   "main": "index.js",

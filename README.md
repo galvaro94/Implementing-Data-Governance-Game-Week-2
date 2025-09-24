@@ -16,6 +16,8 @@ An interactive, team-based challenge designed for the GovEx Academy Data Governa
 ### **🌐 Play Online (Ready Now!)**
 🎮 **Live Game URL**: https://galvaro94.github.io/Implementing-Data-Governance-Game-Week-2/
 
+**Latest Deployment**: Version 1.0.1 - Permissions Fixed ✅
+
 Share this URL with all 8 teams to start playing immediately!
 
 ### **📥 Local Development**
