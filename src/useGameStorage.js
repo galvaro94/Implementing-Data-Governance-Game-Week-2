@@ -116,6 +116,13 @@ export const useGameStorage = () => {
     return storageRef.current ? storageRef.current.getShareableGameUrl() : window.location.href;
   };
 
+  const createNewGameSession = async () => {
+    if (storageRef.current) {
+      return await storageRef.current.createNewGameSession();
+    }
+    return { success: false, error: 'Storage not initialized' };
+  };
+
   return {
     scoreboard,
     activeTeams,
@@ -125,6 +132,7 @@ export const useGameStorage = () => {
     saveTeamSession,
     resetGame,
     isTeamActive,
-    getShareableUrl
+    getShareableUrl,
+    createNewGameSession
   };
 };

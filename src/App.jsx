@@ -17,6 +17,8 @@ const DataGovernanceMatchingGame = () => {
   const [teamSelectionStep, setTeamSelectionStep] = useState(true);
   const [showScoreboard, setShowScoreboard] = useState(false);
   const [completionTime, setCompletionTime] = useState(null);
+  const [showGameLauncher, setShowGameLauncher] = useState(true);
+  const [gameSessionCreated, setGameSessionCreated] = useState(false);
 
   // Use the storage hook
   const {
@@ -25,8 +27,23 @@ const DataGovernanceMatchingGame = () => {
     submitResult,
     saveTeamSession,
     resetGame: resetGlobalGame,
-    isTeamActive
+    isTeamActive,
+    gameUrl,
+    getShareableUrl,
+    createNewGameSession: createGameSession
   } = useGameStorage();
+
+  // Check if we're joining an existing game or need to show launcher
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameId = urlParams.get('gameId');
+
+    if (gameId) {
+      // Joining existing game
+      setShowGameLauncher(false);
+      setGameSessionCreated(true);
+    }
+  }, []);
 
   const teams = [
     { id: 1, name: 'Team Alpha', color: 'from-red-500 to-pink-500', emoji: '🚀' },
@@ -487,6 +504,18 @@ const DataGovernanceMatchingGame = () => {
     setShowResults(false);
   };
 
+  const createNewGameSession = async () => {
+    const result = await createGameSession();
+
+    if (result.success) {
+      setGameSessionCreated(true);
+      setShowGameLauncher(false);
+    } else {
+      console.error('Failed to create game session:', result.error);
+      // Could show an error message to user here
+    }
+  };
+
   const LanguageToggle = () => (
     <div className="flex bg-white/20 backdrop-blur-sm rounded-lg p-1 border border-white/10">
       {[
@@ -645,8 +674,71 @@ const DataGovernanceMatchingGame = () => {
     );
   }
 
+  // Game Launcher Screen
+  if (showGameLauncher && !gameSessionCreated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 p-6">
+        <div className="max-w-4xl mx-auto">
+          {/* Language Toggle - Top Right */}
+          <div className="mb-6 flex justify-end">
+            <LanguageToggle />
+          </div>
+
+          <div className="text-center">
+            {/* Header */}
+            <div className="flex items-center justify-center gap-6 mb-12">
+              <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center shadow-2xl">
+                <div className="text-blue-900 font-bold text-2xl">JHU</div>
+              </div>
+              <div className="text-white">
+                <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+                  {text.title}
+                </h1>
+                <p className="text-2xl text-purple-200 mt-3">{text.subtitle}</p>
+              </div>
+            </div>
+
+            {/* Main Launch Area */}
+            <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-12 max-w-2xl mx-auto">
+              <div className="mb-8">
+                <Trophy className="w-24 h-24 text-purple-600 mx-auto mb-6" />
+                <h2 className="text-4xl font-bold text-slate-800 mb-4">
+                  Ready to Play?
+                </h2>
+                <p className="text-xl text-slate-600 leading-relaxed mb-8">
+                  Create a new game session that all 8 teams can join. Once created, you'll get a shareable link for everyone to use.
+                </p>
+              </div>
+
+              <button
+                onClick={createNewGameSession}
+                className="w-full bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white py-6 px-12 rounded-2xl font-bold text-2xl hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 transition-all duration-300 flex items-center justify-center gap-4 shadow-xl transform hover:scale-105 hover:shadow-2xl"
+              >
+                <Trophy className="w-8 h-8" />
+                Launch New Game
+              </button>
+
+              <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                <div className="flex items-center gap-2 text-blue-700 text-sm font-medium mb-2">
+                  <Users className="w-4 h-4" />
+                  How it works:
+                </div>
+                <ul className="text-sm text-blue-600 text-left space-y-1">
+                  <li>• Click "Launch New Game" to create a session</li>
+                  <li>• Share the generated link with all teams</li>
+                  <li>• Each team joins using the same link</li>
+                  <li>• See integrated results from all teams</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Team Selection Screen
-  if (teamSelectionStep) {
+  if (teamSelectionStep && gameSessionCreated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 p-6">
         <div className="max-w-6xl mx-auto">
@@ -683,27 +775,34 @@ const DataGovernanceMatchingGame = () => {
               <p className="text-slate-600 text-lg">{text.teamSelectionDesc}</p>
 
               {/* Game Session Sharing */}
-              {gameUrl && gameUrl !== window.location.href && (
-                <div className="mt-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
-                  <div className="flex items-center justify-center gap-2 text-blue-700 font-semibold mb-2">
-                    <Share2 className="w-4 h-4" />
-                    Share this game with all teams
+              {gameSessionCreated && gameUrl && (
+                <div className="mt-6 p-6 bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-xl shadow-lg">
+                  <div className="flex items-center justify-center gap-2 text-green-700 font-bold mb-3 text-lg">
+                    <Share2 className="w-5 h-5" />
+                    🎯 Game Session Active - Share This Link!
                   </div>
-                  <div className="flex items-center gap-2 bg-white border border-blue-200 rounded-lg p-2">
+                  <div className="flex items-center gap-3 bg-white border-2 border-green-200 rounded-lg p-3 shadow-sm">
                     <input
                       type="text"
                       readOnly
-                      value={gameUrl}
-                      className="flex-1 text-sm text-slate-600 bg-transparent outline-none"
+                      value={getShareableUrl()}
+                      className="flex-1 text-base text-slate-700 bg-transparent outline-none font-mono"
+                      onClick={(e) => e.target.select()}
                     />
                     <button
-                      onClick={() => navigator.clipboard.writeText(gameUrl)}
-                      className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                      onClick={() => {
+                        navigator.clipboard.writeText(getShareableUrl());
+                        // Could add a toast notification here
+                      }}
+                      className="px-4 py-2 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600 font-medium transition-colors"
                     >
-                      Copy
+                      Copy Link
                     </button>
                   </div>
-                  <p className="text-xs text-blue-600 mt-2">All players must use this same link to see integrated results!</p>
+                  <div className="flex items-center justify-center gap-2 mt-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <p className="text-sm text-green-700 font-medium">All teams must use this exact link to join the same game!</p>
+                  </div>
                 </div>
               )}
             </div>

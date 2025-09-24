@@ -311,4 +311,41 @@ export class CloudGameStorage {
     localStorage.setItem('govex_game_bin_id', gameId);
     this.updateGameUrl();
   }
+
+  // Create a new game session
+  async createNewGameSession() {
+    try {
+      // Generate a unique session ID
+      const timestamp = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      const randomId = Math.random().toString(36).substring(2, 8);
+      const sessionName = `game-${timestamp}-${randomId}`;
+
+      // Create initial game data
+      const initialData = {
+        results: [],
+        activeSessions: {},
+        lastUpdated: Date.now(),
+        sessionName: sessionName,
+        createdAt: Date.now()
+      };
+
+      // Force create a new bin
+      this.binId = null; // Reset to ensure new creation
+      const success = await this.saveGameData(initialData);
+
+      if (success) {
+        this.updateGameUrl();
+        return {
+          success: true,
+          gameUrl: this.getShareableGameUrl(),
+          sessionId: this.binId
+        };
+      }
+
+      return { success: false, error: 'Failed to create session' };
+    } catch (error) {
+      console.error('Error creating new game session:', error);
+      return { success: false, error: error.message };
+    }
+  }
 }
