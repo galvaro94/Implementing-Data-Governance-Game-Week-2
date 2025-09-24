@@ -15,21 +15,31 @@
    - **Branch**: Leave empty (this will be handled by Actions)
    - Click "**Save**"
 
-### **Step 2: Run the Deployment**
+### **Step 2: Enable Workflow Permissions**
 
-After enabling Pages:
+**IMPORTANT**: GitHub requires additional permissions for deployment:
+
+1. **Go to repository Settings** → **Actions** → **General**
+2. **Scroll to "Workflow permissions"**
+3. **Select "Read and write permissions"**
+4. **Check "Allow GitHub Actions to create and approve pull requests"**
+5. **Click "Save"**
+
+### **Step 3: Run the Deployment**
+
+After enabling permissions:
 
 1. **Go to "Actions" tab** in your repository
 
-2. **Choose one of these workflows**:
-   - ✅ **"Deploy to GitHub Pages (Simple)"** - Recommended for first time
-   - 🔧 **"Deploy to GitHub Pages"** - Advanced version
+2. **Try these workflows in order**:
+   - ✅ **"Deploy to GitHub Pages"** - Fixed permissions version
+   - 🔄 **"Deploy to GitHub Pages (Backup Method)"** - If first fails
 
 3. **Click "Run workflow"** (if it doesn't start automatically)
 
 4. **Wait for completion** - Should take 2-3 minutes
 
-### **Step 3: Access Your Game**
+### **Step 4: Access Your Game**
 
 Once successful, your game will be available at:
 ```
