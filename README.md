@@ -13,9 +13,15 @@ An interactive, team-based challenge designed for the GovEx Academy Data Governa
 
 ## 🚀 Quick Start
 
+### **🌐 Play Online (Ready Now!)**
+🎮 **Live Game URL**: https://galvaro94.github.io/Implementing-Data-Governance-Game-Week-2/
+
+Share this URL with all 8 teams to start playing immediately!
+
+### **📥 Local Development**
 1. **Clone the repository**
    ```bash
-   git clone [REPOSITORY_URL]
+   git clone https://github.com/galvaro94/Implementing-Data-Governance-Game-Week-2.git
    cd "GovEx Academy Game - DM1 2025"
    ```
 
