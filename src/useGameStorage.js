@@ -1,83 +1,130 @@
 import { useState, useEffect, useRef } from 'react';
-import { GameStorage } from './gameStorage';
+import { CloudGameStorage } from './cloudStorage';
 
 export const useGameStorage = () => {
   const [scoreboard, setScoreboard] = useState([]);
   const [activeTeams, setActiveTeams] = useState([]);
+  const [isConnected, setIsConnected] = useState(true);
+  const [gameUrl, setGameUrl] = useState('');
   const storageRef = useRef(null);
+  const cleanupRef = useRef(null);
 
   useEffect(() => {
-    // Initialize storage
-    storageRef.current = new GameStorage();
+    // Initialize cloud storage
+    storageRef.current = new CloudGameStorage();
+    setGameUrl(storageRef.current.getGameUrl());
 
     // Load initial data
-    const initialScoreboard = storageRef.current.getScoreboard();
-    const initialActiveTeams = storageRef.current.getActiveTeams();
+    const loadInitialData = async () => {
+      try {
+        const gameData = await storageRef.current.getGameData();
+        setScoreboard(gameData.results || []);
 
-    setScoreboard(initialScoreboard);
-    setActiveTeams(initialActiveTeams);
+        const activeTeamIds = await storageRef.current.getActiveTeams();
+        setActiveTeams(activeTeamIds);
 
-    // Listen for storage updates
-    const handleStorageUpdate = (event) => {
-      const data = event.detail;
-      setScoreboard(data.globalScoreboard || []);
-      setActiveTeams(storageRef.current.getActiveTeams());
+        setIsConnected(true);
+      } catch (error) {
+        console.error('Failed to load initial data:', error);
+        setIsConnected(false);
+      }
     };
 
-    window.addEventListener('gameDataUpdated', handleStorageUpdate);
+    loadInitialData();
+
+    // Start polling for real-time updates
+    cleanupRef.current = storageRef.current.startPolling(
+      (results) => {
+        setScoreboard(results);
+        setIsConnected(true);
+      },
+      2000 // Poll every 2 seconds for near real-time updates
+    );
 
     // Update active teams periodically
-    const activeTeamsInterval = setInterval(() => {
-      const currentActiveTeams = storageRef.current.getActiveTeams();
-      setActiveTeams(currentActiveTeams);
+    const activeTeamsInterval = setInterval(async () => {
+      try {
+        const currentActiveTeams = await storageRef.current.getActiveTeams();
+        setActiveTeams(currentActiveTeams);
+      } catch (error) {
+        console.error('Error updating active teams:', error);
+      }
     }, 5000); // Check every 5 seconds
 
     return () => {
-      window.removeEventListener('gameDataUpdated', handleStorageUpdate);
+      if (cleanupRef.current) {
+        cleanupRef.current();
+      }
       clearInterval(activeTeamsInterval);
     };
   }, []);
 
-  const submitResult = (teamResult) => {
+  const submitResult = async (teamResult) => {
     if (storageRef.current) {
-      const success = storageRef.current.submitTeamResult(teamResult);
-      if (success) {
-        setScoreboard(storageRef.current.getScoreboard());
+      try {
+        const success = await storageRef.current.submitTeamResult(teamResult);
+        if (success) {
+          setGameUrl(storageRef.current.getGameUrl());
+          setIsConnected(true);
+        }
+        return success;
+      } catch (error) {
+        console.error('Error submitting result:', error);
+        setIsConnected(false);
+        return false;
       }
-      return success;
     }
     return false;
   };
 
-  const saveTeamSession = (teamId, sessionData) => {
+  const saveTeamSession = async (teamId, sessionData) => {
     if (storageRef.current) {
-      return storageRef.current.saveTeamSession(teamId, sessionData);
+      try {
+        return await storageRef.current.updateTeamSession(teamId, sessionData);
+      } catch (error) {
+        console.error('Error saving session:', error);
+        return false;
+      }
     }
     return false;
   };
 
-  const resetGame = () => {
+  const resetGame = async () => {
     if (storageRef.current) {
-      const success = storageRef.current.resetGame();
-      if (success) {
-        setScoreboard([]);
-        setActiveTeams([]);
+      try {
+        const success = await storageRef.current.resetGame();
+        if (success) {
+          setScoreboard([]);
+          setActiveTeams([]);
+          setIsConnected(true);
+        }
+        return success;
+      } catch (error) {
+        console.error('Error resetting game:', error);
+        setIsConnected(false);
+        return false;
       }
-      return success;
     }
     return false;
   };
 
   const isTeamActive = (teamId) => {
-    return storageRef.current ? storageRef.current.isTeamActive(teamId) : false;
+    return activeTeams.includes(teamId);
+  };
+
+  const getShareableUrl = () => {
+    return storageRef.current ? storageRef.current.getGameUrl() : window.location.href;
   };
 
   return {
     scoreboard,
     activeTeams,
+    isConnected,
+    gameUrl,
     submitResult,
     saveTeamSession,
     resetGame,
-    isTeamActive
+    isTeamActive,
+    getShareableUrl
   };
 };
