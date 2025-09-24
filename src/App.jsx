@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Trophy, Users, Clock, CheckCircle, XCircle, RotateCcw, Star, Wifi, WifiOff } from 'lucide-react';
+import { Trophy, Users, Clock, CheckCircle, XCircle, RotateCcw, Star, Wifi, WifiOff, Share2 } from 'lucide-react';
 import { useGameStorage } from './useGameStorage';
 
 const DataGovernanceMatchingGame = () => {
@@ -375,6 +375,14 @@ const DataGovernanceMatchingGame = () => {
   const startGame = () => {
     if (teamName.trim()) {
       setGameStarted(true);
+      // Mark team as actively playing
+      if (selectedTeam) {
+        saveTeamSession(selectedTeam.id, {
+          teamName,
+          isPlaying: true,
+          gameStarted: true
+        });
+      }
     }
   };
 
@@ -424,6 +432,17 @@ const DataGovernanceMatchingGame = () => {
 
     // Submit result to persistent storage
     submitResult(teamResult);
+
+    // Mark team as no longer playing
+    if (selectedTeam) {
+      saveTeamSession(selectedTeam.id, {
+        teamName,
+        isPlaying: false,
+        gameCompleted: true,
+        completionTime: timeTaken,
+        score: correctCount
+      });
+    }
 
     setShowResults(true);
     if (correctCount >= 3) {
@@ -662,6 +681,31 @@ const DataGovernanceMatchingGame = () => {
               <Users className="w-20 h-20 text-purple-600 mx-auto mb-6" />
               <h2 className="text-3xl font-bold text-slate-800 mb-3">{text.teamSelection}</h2>
               <p className="text-slate-600 text-lg">{text.teamSelectionDesc}</p>
+
+              {/* Game Session Sharing */}
+              {gameUrl && gameUrl !== window.location.href && (
+                <div className="mt-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                  <div className="flex items-center justify-center gap-2 text-blue-700 font-semibold mb-2">
+                    <Share2 className="w-4 h-4" />
+                    Share this game with all teams
+                  </div>
+                  <div className="flex items-center gap-2 bg-white border border-blue-200 rounded-lg p-2">
+                    <input
+                      type="text"
+                      readOnly
+                      value={gameUrl}
+                      className="flex-1 text-sm text-slate-600 bg-transparent outline-none"
+                    />
+                    <button
+                      onClick={() => navigator.clipboard.writeText(gameUrl)}
+                      className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                  <p className="text-xs text-blue-600 mt-2">All players must use this same link to see integrated results!</p>
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">

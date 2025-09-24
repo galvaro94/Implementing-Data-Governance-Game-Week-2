@@ -113,7 +113,7 @@ export const useGameStorage = () => {
   };
 
   const getShareableUrl = () => {
-    return storageRef.current ? storageRef.current.getGameUrl() : window.location.href;
+    return storageRef.current ? storageRef.current.getShareableGameUrl() : window.location.href;
   };
 
   return {

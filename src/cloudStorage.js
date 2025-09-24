@@ -71,6 +71,11 @@ export class CloudGameStorage {
   // Get all results from cloud
   async getGameData() {
     if (!this.binId) {
+      // Check if there's a recent active game we can join
+      const fallbackData = this.getFallbackData();
+      if (fallbackData.results.length > 0) {
+        return fallbackData;
+      }
       return {
         results: [],
         activeSessions: {},
@@ -90,6 +95,8 @@ export class CloudGameStorage {
           activeSessions: {},
           lastUpdated: Date.now()
         };
+      } else {
+        console.warn(`Failed to fetch from cloud: ${response.status}`);
       }
     } catch (error) {
       console.error('Error fetching cloud data:', error);
@@ -138,6 +145,7 @@ export class CloudGameStorage {
       gameData.activeSessions = gameData.activeSessions || {};
       gameData.activeSessions[teamId] = {
         ...sessionData,
+        isPlaying: sessionData.isPlaying || false,
         lastUpdated: Date.now()
       };
 
@@ -157,8 +165,8 @@ export class CloudGameStorage {
 
       if (gameData.activeSessions) {
         Object.entries(gameData.activeSessions).forEach(([teamId, session]) => {
-          // Consider active if updated within last 5 minutes
-          if (session.lastUpdated && (now - session.lastUpdated) < 300000) {
+          // Consider active if playing AND updated within last 2 minutes
+          if (session.isPlaying && session.lastUpdated && (now - session.lastUpdated) < 120000) {
             activeTeams.push(parseInt(teamId));
           }
         });
@@ -281,5 +289,26 @@ export class CloudGameStorage {
     } catch (error) {
       console.error('Error saving fallback data:', error);
     }
+  }
+
+  // Get a shareable game URL that others can use to join
+  getShareableGameUrl() {
+    if (this.binId) {
+      const baseUrl = window.location.origin + window.location.pathname;
+      return `${baseUrl}?gameId=${this.binId}`;
+    }
+    return window.location.href;
+  }
+
+  // Check if we're in a shared game session
+  isSharedSession() {
+    return !!this.binId;
+  }
+
+  // Force join an existing game session by ID
+  joinGameSession(gameId) {
+    this.binId = gameId;
+    localStorage.setItem('govex_game_bin_id', gameId);
+    this.updateGameUrl();
   }
 }
