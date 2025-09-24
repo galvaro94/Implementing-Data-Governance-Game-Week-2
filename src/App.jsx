@@ -19,6 +19,7 @@ const DataGovernanceMatchingGame = () => {
   const [completionTime, setCompletionTime] = useState(null);
   const [showGameLauncher, setShowGameLauncher] = useState(true);
   const [gameSessionCreated, setGameSessionCreated] = useState(false);
+  const [creatingSession, setCreatingSession] = useState(false);
 
   // Use the storage hook
   const {
@@ -505,14 +506,26 @@ const DataGovernanceMatchingGame = () => {
   };
 
   const createNewGameSession = async () => {
-    const result = await createGameSession();
+    console.log('Creating new game session...');
+    setCreatingSession(true);
 
-    if (result.success) {
-      setGameSessionCreated(true);
-      setShowGameLauncher(false);
-    } else {
-      console.error('Failed to create game session:', result.error);
-      // Could show an error message to user here
+    try {
+      const result = await createGameSession();
+      console.log('Game session result:', result);
+
+      if (result.success) {
+        console.log('Game session created successfully');
+        setGameSessionCreated(true);
+        setShowGameLauncher(false);
+      } else {
+        console.error('Failed to create game session:', result.error);
+        alert('Failed to create game session. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error creating game session:', error);
+      alert('Error creating game session. Please try again.');
+    } finally {
+      setCreatingSession(false);
     }
   };
 
@@ -712,10 +725,24 @@ const DataGovernanceMatchingGame = () => {
 
               <button
                 onClick={createNewGameSession}
-                className="w-full bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white py-6 px-12 rounded-2xl font-bold text-2xl hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 transition-all duration-300 flex items-center justify-center gap-4 shadow-xl transform hover:scale-105 hover:shadow-2xl"
+                disabled={creatingSession}
+                className={`w-full py-6 px-12 rounded-2xl font-bold text-2xl transition-all duration-300 flex items-center justify-center gap-4 shadow-xl ${
+                  creatingSession
+                    ? 'bg-gray-500 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 transform hover:scale-105 hover:shadow-2xl'
+                }`}
               >
-                <Trophy className="w-8 h-8" />
-                Launch New Game
+                {creatingSession ? (
+                  <>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                    Creating Game...
+                  </>
+                ) : (
+                  <>
+                    <Trophy className="w-8 h-8" />
+                    Launch New Game
+                  </>
+                )}
               </button>
 
               <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">

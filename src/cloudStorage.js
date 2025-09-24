@@ -113,20 +113,30 @@ export class CloudGameStorage {
         `${this.apiUrl}/${this.binId}` :
         this.apiUrl;
 
+      console.log('Saving to URL:', url, 'Method:', this.binId ? 'PUT' : 'POST');
+
       const response = await fetch(url, {
         method: this.binId ? 'PUT' : 'POST',
         headers: this.headers,
         body: JSON.stringify(gameData)
       });
 
+      console.log('Response status:', response.status, 'OK:', response.ok);
+
       if (response.ok) {
         const data = await response.json();
+        console.log('Response data:', data);
+
         if (!this.binId && data.metadata && data.metadata.id) {
           // Store new bin ID
           this.binId = data.metadata.id;
           localStorage.setItem('govex_game_bin_id', this.binId);
+          console.log('Stored new bin ID:', this.binId);
         }
         return true;
+      } else {
+        const errorText = await response.text();
+        console.error('Failed to save:', response.status, errorText);
       }
     } catch (error) {
       console.error('Error saving to cloud:', error);
@@ -315,34 +325,39 @@ export class CloudGameStorage {
   // Create a new game session
   async createNewGameSession() {
     try {
-      // Generate a unique session ID
-      const timestamp = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      // Generate a unique session ID locally
+      const timestamp = Date.now();
       const randomId = Math.random().toString(36).substring(2, 8);
-      const sessionName = `game-${timestamp}-${randomId}`;
+      const gameId = `${timestamp}${randomId}`;
 
-      // Create initial game data
+      console.log('Creating local game session with ID:', gameId);
+
+      // Set the game ID locally and create shareable URL immediately
+      this.binId = gameId;
+      localStorage.setItem('govex_game_bin_id', gameId);
+      this.updateGameUrl();
+
+      // Create shareable URL
+      const shareableUrl = this.getShareableGameUrl();
+      console.log('Created game session successfully:', shareableUrl);
+
+      // Initialize local storage with empty game data
       const initialData = {
         results: [],
         activeSessions: {},
         lastUpdated: Date.now(),
-        sessionName: sessionName,
+        sessionName: `game-${Date.now()}`,
         createdAt: Date.now()
       };
 
-      // Force create a new bin
-      this.binId = null; // Reset to ensure new creation
-      const success = await this.saveGameData(initialData);
+      // Save to localStorage as backup
+      this.saveFallbackData(initialData);
 
-      if (success) {
-        this.updateGameUrl();
-        return {
-          success: true,
-          gameUrl: this.getShareableGameUrl(),
-          sessionId: this.binId
-        };
-      }
-
-      return { success: false, error: 'Failed to create session' };
+      return {
+        success: true,
+        gameUrl: shareableUrl,
+        sessionId: this.binId
+      };
     } catch (error) {
       console.error('Error creating new game session:', error);
       return { success: false, error: error.message };
