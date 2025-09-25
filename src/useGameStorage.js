@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { SimpleCloudStorage } from './simpleCloudStorage';
+import { RealCloudStorage } from './realCloudStorage';
 
 export const useGameStorage = () => {
   const [scoreboard, setScoreboard] = useState([]);
@@ -10,8 +10,8 @@ export const useGameStorage = () => {
   const cleanupRef = useRef(null);
 
   useEffect(() => {
-    // Initialize simple cloud storage
-    storageRef.current = new SimpleCloudStorage();
+    // Initialize real cloud storage
+    storageRef.current = new RealCloudStorage();
     setGameUrl(storageRef.current.getShareableUrl());
 
     // Load initial data
@@ -38,7 +38,7 @@ export const useGameStorage = () => {
         setScoreboard(results);
         setIsConnected(true);
       },
-      2000 // Poll every 2 seconds for near real-time updates
+      1000 // Poll every 1 second for immediate updates
     );
 
     // Update active teams periodically
