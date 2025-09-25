@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { RealCloudStorage } from './realCloudStorage';
+import { FinalStorage } from './finalStorage';
 
 export const useGameStorage = () => {
   const [scoreboard, setScoreboard] = useState([]);
@@ -10,8 +10,8 @@ export const useGameStorage = () => {
   const cleanupRef = useRef(null);
 
   useEffect(() => {
-    // Initialize real cloud storage
-    storageRef.current = new RealCloudStorage();
+    // Initialize final working storage
+    storageRef.current = new FinalStorage();
     setGameUrl(storageRef.current.getShareableUrl());
 
     // Load initial data
