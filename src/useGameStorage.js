@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { CloudGameStorage } from './cloudStorage';
+import { SimpleCloudStorage } from './simpleCloudStorage';
 
 export const useGameStorage = () => {
   const [scoreboard, setScoreboard] = useState([]);
@@ -10,9 +10,9 @@ export const useGameStorage = () => {
   const cleanupRef = useRef(null);
 
   useEffect(() => {
-    // Initialize cloud storage
-    storageRef.current = new CloudGameStorage();
-    setGameUrl(storageRef.current.getGameUrl());
+    // Initialize simple cloud storage
+    storageRef.current = new SimpleCloudStorage();
+    setGameUrl(storageRef.current.getShareableUrl());
 
     // Load initial data
     const loadInitialData = async () => {
@@ -64,7 +64,7 @@ export const useGameStorage = () => {
       try {
         const success = await storageRef.current.submitTeamResult(teamResult);
         if (success) {
-          setGameUrl(storageRef.current.getGameUrl());
+          setGameUrl(storageRef.current.getShareableUrl());
           setIsConnected(true);
         }
         return success;
@@ -113,12 +113,16 @@ export const useGameStorage = () => {
   };
 
   const getShareableUrl = () => {
-    return storageRef.current ? storageRef.current.getShareableGameUrl() : window.location.href;
+    return storageRef.current ? storageRef.current.getShareableUrl() : window.location.href;
   };
 
   const createNewGameSession = async () => {
     if (storageRef.current) {
-      return await storageRef.current.createNewGameSession();
+      const result = storageRef.current.createNewGameSession();
+      if (result.success) {
+        setGameUrl(result.gameUrl);
+      }
+      return result;
     }
     return { success: false, error: 'Storage not initialized' };
   };
