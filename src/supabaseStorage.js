@@ -66,81 +66,44 @@ export class SupabaseStorage {
     return `${baseUrl}?gameId=${this.gameId}`;
   }
 
-  // Save game data to Supabase with better error handling
+  // Save game data to Supabase
   async saveGameData(gameData) {
-    const timestamp = Date.now();
     const dataToSave = {
       game_id: this.gameId,
       data: {
         ...gameData,
-        lastUpdated: timestamp,
-        gameId: this.gameId,
-        saveAttempt: timestamp // Track save attempts to prevent duplicates
+        lastUpdated: Date.now(),
+        gameId: this.gameId
       }
     };
 
     console.log('=== SAVING TO SUPABASE ===');
     console.log('Game ID:', this.gameId);
     console.log('Results count:', dataToSave.data.results?.length || 0);
-    console.log('Timestamp:', timestamp);
+    if (dataToSave.data.results?.length > 0) {
+      console.log('All teams being saved:', dataToSave.data.results.map(r => `${r.teamName}: ${r.score}`));
+    }
 
     // Always save to localStorage as backup
     this.saveToLocalStorage(dataToSave.data);
 
     try {
-      // Use upsert to handle both insert and update in one operation
+      // Use upsert to handle both insert and update
       const { data, error } = await this.supabase
         .from('game_sessions')
-        .upsert(dataToSave, {
-          onConflict: 'game_id',
-          ignoreDuplicates: false
-        })
+        .upsert(dataToSave, { onConflict: 'game_id' })
         .select();
 
       if (error) {
-        console.error('Supabase upsert error:', error.message);
-        console.error('Error details:', error);
-
-        // Try alternative approach if upsert fails
-        try {
-          const { data: updateData, error: updateError } = await this.supabase
-            .from('game_sessions')
-            .update({ data: dataToSave.data })
-            .eq('game_id', this.gameId)
-            .select();
-
-          if (updateError && updateError.code === 'PGRST116') {
-            // Record doesn't exist, try insert
-            const { data: insertData, error: insertError } = await this.supabase
-              .from('game_sessions')
-              .insert([dataToSave])
-              .select();
-
-            if (insertError) {
-              console.error('Fallback insert error:', insertError);
-              return false;
-            }
-            console.log('✓ Fallback insert successful');
-          } else if (updateError) {
-            console.error('Fallback update error:', updateError);
-            return false;
-          } else {
-            console.log('✓ Fallback update successful');
-          }
-        } catch (fallbackError) {
-          console.error('All fallback methods failed:', fallbackError);
-          return false;
-        }
-      } else {
-        console.log('✓ Supabase upsert successful');
-        console.log('Saved results:', dataToSave.data.results?.map(r => `${r.teamName}: ${r.score}`) || []);
+        console.error('Supabase error:', error);
+        return false;
       }
 
+      console.log('✓ Successfully saved to Supabase');
       return true;
     } catch (error) {
-      console.error('Network/connection error:', error);
-      console.log('Data saved to localStorage backup');
-      return false; // Return false but data is still in localStorage
+      console.error('Network error:', error);
+      return false;
     }
   }
 
@@ -169,9 +132,15 @@ export class SupabaseStorage {
         console.error('Supabase fetch error:', error);
       } else if (data && data.data) {
         const gameData = data.data;
-        console.log('Successfully loaded from Supabase:', gameData.results?.length || 0, 'results');
+        console.log('✓ Successfully loaded from Supabase:', gameData.results?.length || 0, 'results');
+
+        // Log ALL results to debug the scoreboard issue
         if (gameData.results && gameData.results.length > 0) {
-          console.log('Results:', gameData.results.map(r => `${r.teamName}: ${r.score}`));
+          console.log('=== ALL RESULTS FROM SUPABASE ===');
+          gameData.results.forEach((result, index) => {
+            console.log(`${index + 1}. ${result.teamName}: ${result.score} (Team ID: ${result.teamId})`);
+          });
+          console.log('=== END RESULTS ===');
         }
 
         // Cache in localStorage
@@ -259,36 +228,27 @@ export class SupabaseStorage {
     return activeTeams;
   }
 
-  // BULLETPROOF polling with real-time + aggressive backup polling
-  startPolling(callback, interval = 1000) {
-    console.log('Starting BULLETPROOF Supabase sync - Real-time + Aggressive Polling');
+  // Simple reliable polling with real-time backup
+  startPolling(callback, interval = 2000) {
+    console.log('Starting Supabase polling every', interval, 'ms');
 
-    let lastUpdateTime = 0;
-    let subscriptionActive = false;
-
-    // Aggressive polling function that always works
+    // Simple polling function
     const pollForUpdates = async () => {
       try {
         const gameData = await this.getGameData();
         const results = gameData.results || [];
-
-        // Only update if data actually changed
-        if (gameData.lastUpdated > lastUpdateTime) {
-          lastUpdateTime = gameData.lastUpdated;
-          console.log(`✓ POLLING UPDATE: Found ${results.length} results`);
-          if (results.length > 0) {
-            console.log('Results:', results.map(r => `${r.teamName}: ${r.score}`));
-          }
-          callback(results);
+        console.log(`Polling: Found ${results.length} results`);
+        if (results.length > 0) {
+          console.log('All results:', results.map(r => `${r.teamName}: ${r.score}`));
         }
+        callback(results);
       } catch (error) {
         console.error('Polling error:', error);
-        // Still try to callback with empty array to keep UI responsive
         callback([]);
       }
     };
 
-    // Try to set up real-time subscription (but don't rely on it)
+    // Try real-time subscription as bonus
     let subscription = null;
     try {
       subscription = this.supabase
@@ -302,55 +262,30 @@ export class SupabaseStorage {
             filter: `game_id=eq.${this.gameId}`
           },
           (payload) => {
-            console.log('✓ REAL-TIME UPDATE received:', payload.eventType);
-            subscriptionActive = true;
+            console.log('Real-time update received');
             if (payload.new && payload.new.data) {
               const results = payload.new.data.results || [];
               console.log('Real-time results:', results.length, 'results');
-              if (payload.new.data.lastUpdated > lastUpdateTime) {
-                lastUpdateTime = payload.new.data.lastUpdated;
-                callback(results);
-              }
+              callback(results);
             }
           }
         )
-        .subscribe((status) => {
-          console.log('Subscription status:', status);
-          if (status === 'SUBSCRIBED') {
-            subscriptionActive = true;
-            console.log('✓ Real-time subscription active');
-          } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-            subscriptionActive = false;
-            console.log('✗ Real-time subscription failed, relying on polling');
-          }
-        });
+        .subscribe();
     } catch (error) {
-      console.error('Real-time subscription setup failed:', error);
-      console.log('Falling back to polling only');
+      console.log('Real-time setup failed, using polling only');
     }
 
     // Initial load
     pollForUpdates();
 
-    // AGGRESSIVE polling - every 1 second to ensure consistency
+    // Regular polling
     const intervalId = setInterval(pollForUpdates, interval);
 
-    // Extra aggressive polling when real-time isn't working
-    const checkRealtimeStatus = setInterval(() => {
-      if (!subscriptionActive) {
-        console.log('Real-time not active, triggering extra poll');
-        pollForUpdates();
-      }
-    }, 2000);
-
-    // Return cleanup function
     return () => {
-      console.log('Cleaning up BULLETPROOF sync');
       if (subscription) {
         subscription.unsubscribe();
       }
       clearInterval(intervalId);
-      clearInterval(checkRealtimeStatus);
     };
   }
 
