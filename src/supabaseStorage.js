@@ -66,61 +66,81 @@ export class SupabaseStorage {
     return `${baseUrl}?gameId=${this.gameId}`;
   }
 
-  // Save game data to Supabase
+  // Save game data to Supabase with better error handling
   async saveGameData(gameData) {
+    const timestamp = Date.now();
     const dataToSave = {
       game_id: this.gameId,
       data: {
         ...gameData,
-        lastUpdated: Date.now(),
-        gameId: this.gameId
+        lastUpdated: timestamp,
+        gameId: this.gameId,
+        saveAttempt: timestamp // Track save attempts to prevent duplicates
       }
     };
 
     console.log('=== SAVING TO SUPABASE ===');
     console.log('Game ID:', this.gameId);
-    console.log('Data:', dataToSave.data);
+    console.log('Results count:', dataToSave.data.results?.length || 0);
+    console.log('Timestamp:', timestamp);
 
     // Always save to localStorage as backup
     this.saveToLocalStorage(dataToSave.data);
 
     try {
-      // First try to update existing record
-      const { data: existingData } = await this.supabase
+      // Use upsert to handle both insert and update in one operation
+      const { data, error } = await this.supabase
         .from('game_sessions')
-        .select('*')
-        .eq('game_id', this.gameId)
-        .single();
+        .upsert(dataToSave, {
+          onConflict: 'game_id',
+          ignoreDuplicates: false
+        })
+        .select();
 
-      if (existingData) {
-        // Update existing record
-        const { data, error } = await this.supabase
-          .from('game_sessions')
-          .update(dataToSave)
-          .eq('game_id', this.gameId);
+      if (error) {
+        console.error('Supabase upsert error:', error.message);
+        console.error('Error details:', error);
 
-        if (error) {
-          console.error('Supabase update error:', error);
+        // Try alternative approach if upsert fails
+        try {
+          const { data: updateData, error: updateError } = await this.supabase
+            .from('game_sessions')
+            .update({ data: dataToSave.data })
+            .eq('game_id', this.gameId)
+            .select();
+
+          if (updateError && updateError.code === 'PGRST116') {
+            // Record doesn't exist, try insert
+            const { data: insertData, error: insertError } = await this.supabase
+              .from('game_sessions')
+              .insert([dataToSave])
+              .select();
+
+            if (insertError) {
+              console.error('Fallback insert error:', insertError);
+              return false;
+            }
+            console.log('✓ Fallback insert successful');
+          } else if (updateError) {
+            console.error('Fallback update error:', updateError);
+            return false;
+          } else {
+            console.log('✓ Fallback update successful');
+          }
+        } catch (fallbackError) {
+          console.error('All fallback methods failed:', fallbackError);
           return false;
         }
-        console.log('Successfully updated game in Supabase');
       } else {
-        // Create new record
-        const { data, error } = await this.supabase
-          .from('game_sessions')
-          .insert([dataToSave]);
-
-        if (error) {
-          console.error('Supabase insert error:', error);
-          return false;
-        }
-        console.log('Successfully created game in Supabase');
+        console.log('✓ Supabase upsert successful');
+        console.log('Saved results:', dataToSave.data.results?.map(r => `${r.teamName}: ${r.score}`) || []);
       }
 
       return true;
     } catch (error) {
-      console.error('Network error saving to Supabase:', error);
-      return false;
+      console.error('Network/connection error:', error);
+      console.log('Data saved to localStorage backup');
+      return false; // Return false but data is still in localStorage
     }
   }
 
@@ -239,59 +259,98 @@ export class SupabaseStorage {
     return activeTeams;
   }
 
-  // Real-time polling with Supabase real-time subscriptions
-  startPolling(callback, interval = 2000) {
-    console.log('Starting Supabase real-time subscription');
+  // BULLETPROOF polling with real-time + aggressive backup polling
+  startPolling(callback, interval = 1000) {
+    console.log('Starting BULLETPROOF Supabase sync - Real-time + Aggressive Polling');
 
-    // Set up real-time subscription for immediate updates
-    const subscription = this.supabase
-      .channel('game_sessions_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'game_sessions',
-          filter: `game_id=eq.${this.gameId}`
-        },
-        (payload) => {
-          console.log('Real-time update received:', payload);
-          if (payload.new && payload.new.data) {
-            const results = payload.new.data.results || [];
-            console.log('Real-time results update:', results.length, 'results');
-            if (results.length > 0) {
-              console.log('Updated results:', results.map(r => `${r.teamName}: ${r.score}`));
-            }
-            callback(results);
-          }
-        }
-      )
-      .subscribe();
+    let lastUpdateTime = 0;
+    let subscriptionActive = false;
 
-    // Also do periodic polling as backup
+    // Aggressive polling function that always works
     const pollForUpdates = async () => {
       try {
         const gameData = await this.getGameData();
         const results = gameData.results || [];
-        console.log(`Polling backup: Found ${results.length} results`);
-        callback(results);
+
+        // Only update if data actually changed
+        if (gameData.lastUpdated > lastUpdateTime) {
+          lastUpdateTime = gameData.lastUpdated;
+          console.log(`✓ POLLING UPDATE: Found ${results.length} results`);
+          if (results.length > 0) {
+            console.log('Results:', results.map(r => `${r.teamName}: ${r.score}`));
+          }
+          callback(results);
+        }
       } catch (error) {
         console.error('Polling error:', error);
+        // Still try to callback with empty array to keep UI responsive
         callback([]);
       }
     };
 
+    // Try to set up real-time subscription (but don't rely on it)
+    let subscription = null;
+    try {
+      subscription = this.supabase
+        .channel(`game_${this.gameId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'game_sessions',
+            filter: `game_id=eq.${this.gameId}`
+          },
+          (payload) => {
+            console.log('✓ REAL-TIME UPDATE received:', payload.eventType);
+            subscriptionActive = true;
+            if (payload.new && payload.new.data) {
+              const results = payload.new.data.results || [];
+              console.log('Real-time results:', results.length, 'results');
+              if (payload.new.data.lastUpdated > lastUpdateTime) {
+                lastUpdateTime = payload.new.data.lastUpdated;
+                callback(results);
+              }
+            }
+          }
+        )
+        .subscribe((status) => {
+          console.log('Subscription status:', status);
+          if (status === 'SUBSCRIBED') {
+            subscriptionActive = true;
+            console.log('✓ Real-time subscription active');
+          } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+            subscriptionActive = false;
+            console.log('✗ Real-time subscription failed, relying on polling');
+          }
+        });
+    } catch (error) {
+      console.error('Real-time subscription setup failed:', error);
+      console.log('Falling back to polling only');
+    }
+
     // Initial load
     pollForUpdates();
 
-    // Backup polling every few seconds
+    // AGGRESSIVE polling - every 1 second to ensure consistency
     const intervalId = setInterval(pollForUpdates, interval);
+
+    // Extra aggressive polling when real-time isn't working
+    const checkRealtimeStatus = setInterval(() => {
+      if (!subscriptionActive) {
+        console.log('Real-time not active, triggering extra poll');
+        pollForUpdates();
+      }
+    }, 2000);
 
     // Return cleanup function
     return () => {
-      console.log('Cleaning up Supabase subscription and polling');
-      subscription.unsubscribe();
+      console.log('Cleaning up BULLETPROOF sync');
+      if (subscription) {
+        subscription.unsubscribe();
+      }
       clearInterval(intervalId);
+      clearInterval(checkRealtimeStatus);
     };
   }
 
