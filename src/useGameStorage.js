@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { FinalStorage } from './finalStorage';
+import { SupabaseStorage } from './supabaseStorage';
 
 export const useGameStorage = () => {
   const [scoreboard, setScoreboard] = useState([]);
@@ -10,8 +10,8 @@ export const useGameStorage = () => {
   const cleanupRef = useRef(null);
 
   useEffect(() => {
-    // Initialize final working storage
-    storageRef.current = new FinalStorage();
+    // Initialize Supabase storage
+    storageRef.current = new SupabaseStorage();
     setGameUrl(storageRef.current.getShareableUrl());
 
     // Load initial data
