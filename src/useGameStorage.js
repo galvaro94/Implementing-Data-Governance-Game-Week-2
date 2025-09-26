@@ -66,6 +66,11 @@ export const useGameStorage = () => {
         if (success) {
           setGameUrl(storageRef.current.getShareableUrl());
           setIsConnected(true);
+
+          // Force immediate refresh of scoreboard data
+          console.log('Forcing immediate scoreboard refresh...');
+          const refreshedData = await storageRef.current.getGameData();
+          setScoreboard(refreshedData.results || []);
         }
         return success;
       } catch (error) {
