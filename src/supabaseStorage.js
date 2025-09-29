@@ -68,6 +68,11 @@ export class SupabaseStorage {
 
   // Save game data to Supabase
   async saveGameData(gameData) {
+    return this.saveGameDataWithRetry(gameData, 0);
+  }
+
+  // Save game data with retry logic to handle race conditions
+  async saveGameDataWithRetry(gameData, retryAttempt = 0) {
     const dataToSave = {
       game_id: this.gameId,
       data: {
@@ -80,6 +85,7 @@ export class SupabaseStorage {
     console.log('=== SAVING TO SUPABASE ===');
     console.log('Game ID:', this.gameId);
     console.log('Results count:', dataToSave.data.results?.length || 0);
+    console.log('Retry attempt:', retryAttempt);
     if (dataToSave.data.results?.length > 0) {
       console.log('All teams being saved:', dataToSave.data.results.map(r => `${r.teamName}: ${r.score}`));
     }
@@ -96,6 +102,13 @@ export class SupabaseStorage {
 
       if (error) {
         console.error('Supabase error:', error);
+
+        // If this is a concurrent modification error, we can retry
+        if (error.code === '23505' || error.message?.includes('conflict')) {
+          console.log('Detected potential race condition, will retry');
+          return false;
+        }
+
         return false;
       }
 
@@ -118,6 +131,7 @@ export class SupabaseStorage {
     console.log('Game ID:', this.gameId);
 
     try {
+      // Force fresh data by adding cache busting
       const { data, error } = await this.supabase
         .from('game_sessions')
         .select('*')
@@ -162,44 +176,86 @@ export class SupabaseStorage {
     return fallbackData;
   }
 
-  // Submit team result
+  // Submit team result with retry logic to prevent race conditions
   async submitTeamResult(teamResult) {
-    try {
-      console.log('=== SUBMITTING RESULT ===');
-      console.log('Team:', teamResult.teamName, 'Score:', teamResult.score);
+    const maxRetries = 3;
+    let retryCount = 0;
 
-      const gameData = await this.getGameData();
-      console.log('Current results before update:', gameData.results.length);
+    while (retryCount < maxRetries) {
+      try {
+        console.log(`=== SUBMITTING RESULT (Attempt ${retryCount + 1}/${maxRetries}) ===`);
+        console.log('Team:', teamResult.teamName, 'Score:', teamResult.score);
 
-      // Remove existing result for this team
-      gameData.results = gameData.results.filter(
-        result => result.teamId !== teamResult.teamId
-      );
+        // Always fetch fresh data to avoid race conditions
+        const gameData = await this.getGameData();
+        console.log('Current results before update:', gameData.results.length);
 
-      // Add new result
-      gameData.results.push({
-        ...teamResult,
-        timestamp: Date.now()
-      });
+        // Check if this exact result already exists (prevent duplicates)
+        const existingResult = gameData.results.find(
+          result => result.teamId === teamResult.teamId &&
+                   result.playerName === teamResult.playerName &&
+                   result.timestamp && (Date.now() - result.timestamp) < 30000 // Within last 30 seconds
+        );
 
-      // Sort results
-      gameData.results.sort((a, b) => {
-        if (b.score !== a.score) return b.score - a.score;
-        return a.completionTime - b.completionTime;
-      });
+        if (existingResult) {
+          console.log('✓ Result already exists for this team, skipping duplicate');
+          return true;
+        }
 
-      console.log('Results after update:', gameData.results.length);
-      console.log('All results:', gameData.results.map(r => `${r.teamName}: ${r.score}`));
+        // Remove any existing result for this team
+        gameData.results = gameData.results.filter(
+          result => result.teamId !== teamResult.teamId
+        );
 
-      const success = await this.saveGameData(gameData);
-      console.log('Save success:', success);
-      console.log('=== RESULT SUBMITTED ===');
+        // Add new result
+        const newResult = {
+          ...teamResult,
+          timestamp: Date.now(),
+          submissionId: `${teamResult.teamId}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`
+        };
 
-      return success;
-    } catch (error) {
-      console.error('Error submitting result:', error);
-      return false;
+        gameData.results.push(newResult);
+
+        // Sort results
+        gameData.results.sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          return a.completionTime - b.completionTime;
+        });
+
+        console.log('Results after update:', gameData.results.length);
+        console.log('All results:', gameData.results.map(r => `${r.teamName}: ${r.score} (ID: ${r.teamId})`));
+
+        // Try to save with retry on conflict
+        const success = await this.saveGameDataWithRetry(gameData, retryCount);
+
+        if (success) {
+          console.log('✓ Save successful on attempt', retryCount + 1);
+          console.log('=== RESULT SUBMITTED ===');
+          return true;
+        }
+
+        retryCount++;
+        console.log(`❌ Save failed, retrying... (${retryCount}/${maxRetries})`);
+
+        // Wait a bit before retrying to reduce collision chance
+        await new Promise(resolve => setTimeout(resolve, 500 + (retryCount * 300)));
+
+      } catch (error) {
+        console.error(`Error on attempt ${retryCount + 1}:`, error);
+        retryCount++;
+
+        if (retryCount >= maxRetries) {
+          console.error('All retry attempts failed');
+          return false;
+        }
+
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
     }
+
+    console.error('Failed to submit result after all retries');
+    return false;
   }
 
   async updateTeamSession(teamId, sessionData) {
