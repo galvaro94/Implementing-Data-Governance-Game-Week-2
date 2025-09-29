@@ -1081,15 +1081,8 @@ const DataGovernanceMatchingGame = () => {
 
             <div className="flex gap-4 mt-10">
               <button
-                onClick={goToScoreboard}
-                className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-green-700 hover:to-blue-700 transition-all duration-300 flex items-center justify-center gap-3 shadow-xl transform hover:scale-105"
-              >
-                <Trophy className="w-5 h-5" />
-                {text.viewScoreboard}
-              </button>
-              <button
                 onClick={async () => {
-                  console.log('=== MANUAL SCOREBOARD UPDATE ===');
+                  console.log('=== SUBMITTING SCORE ===');
                   const teamResult = {
                     teamId: selectedTeam.id,
                     teamName: selectedTeam.name,
@@ -1104,22 +1097,22 @@ const DataGovernanceMatchingGame = () => {
                     earnedBadge: score >= 3
                   };
 
-                  console.log('Pushing result to scoreboard:', teamResult);
+                  console.log('Submitting score:', teamResult);
                   const success = await submitResult(teamResult);
-                  console.log('Manual push result:', success);
+                  console.log('Submit result:', success);
 
                   if (success) {
-                    alert('✅ Scores successfully pushed to scoreboard!');
+                    alert('✅ Score successfully submitted!');
+                    // Auto-redirect to scoreboard
+                    setCurrentView('scoreboard');
                   } else {
-                    alert('❌ Failed to push scores. Please try again.');
+                    alert('❌ Failed to submit score. Please try again.');
                   }
                 }}
-                className="bg-gradient-to-r from-purple-500 to-pink-600 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-purple-600 hover:to-pink-700 transition-all duration-300 flex items-center justify-center gap-3 shadow-xl transform hover:scale-105"
+                className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-green-700 hover:to-blue-700 transition-all duration-300 flex items-center justify-center gap-3 shadow-xl transform hover:scale-105"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-                Push to Scoreboard
+                <Trophy className="w-5 h-5" />
+                Submit Score
               </button>
 
               <button
