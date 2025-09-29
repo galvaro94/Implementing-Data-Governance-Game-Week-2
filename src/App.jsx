@@ -1103,7 +1103,7 @@ const DataGovernanceMatchingGame = () => {
 
                   if (success) {
                     // Show success message and wait for user to click OK
-                    const userConfirmed = confirm('✅ Score successfully submitted!\n\nClick OK to view the live scoreboard.');
+                    const userConfirmed = confirm('✅ Score successfully submitted, please click OK to see the live score dashboard');
                     if (userConfirmed) {
                       // Redirect to scoreboard after user clicks OK
                       setShowScoreboard(true);
