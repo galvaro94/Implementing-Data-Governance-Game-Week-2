@@ -1102,9 +1102,12 @@ const DataGovernanceMatchingGame = () => {
                   console.log('Submit result:', success);
 
                   if (success) {
-                    alert('✅ Score successfully submitted!');
-                    // Auto-redirect to scoreboard
-                    setCurrentView('scoreboard');
+                    // Show success message and wait for user to click OK
+                    const userConfirmed = confirm('✅ Score successfully submitted!\n\nClick OK to view the live scoreboard.');
+                    if (userConfirmed) {
+                      // Redirect to scoreboard after user clicks OK
+                      setShowScoreboard(true);
+                    }
                   } else {
                     alert('❌ Failed to submit score. Please try again.');
                   }
