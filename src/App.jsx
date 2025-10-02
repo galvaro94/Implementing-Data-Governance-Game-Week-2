@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Trophy, Users, Clock, CheckCircle, XCircle, RotateCcw, Star, Wifi, WifiOff, Share2 } from 'lucide-react';
 import { useGameStorage } from './useGameStorage';
 
@@ -381,8 +381,8 @@ const DataGovernanceMatchingGame = () => {
     }
   };
 
-  const questions = questionsData[selectedLanguage] || questionsData.en;
-  const text = textData[selectedLanguage] || textData.en;
+  const questions = useMemo(() => questionsData[selectedLanguage] || questionsData.en, [selectedLanguage]);
+  const text = useMemo(() => textData[selectedLanguage] || textData.en, [selectedLanguage]);
 
   useEffect(() => {
     let interval;
