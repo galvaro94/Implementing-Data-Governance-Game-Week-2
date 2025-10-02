@@ -760,7 +760,7 @@ const DataGovernanceMatchingGame = () => {
             </div>
 
             {/* Main Launch Area */}
-            <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-12 max-w-2xl mx-auto">
+            <div key={selectedLanguage} className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-12 max-w-2xl mx-auto">
               <div className="mb-8">
                 <Trophy className="w-24 h-24 text-purple-600 mx-auto mb-6" />
                 <h2 className="text-4xl font-bold text-slate-800 mb-4">
