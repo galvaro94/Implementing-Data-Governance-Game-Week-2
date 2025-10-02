@@ -248,7 +248,16 @@ const DataGovernanceMatchingGame = () => {
       scoreSubmittedSuccess: "Score successfully submitted, please click OK to see the live score dashboard",
       scoreSubmissionFailed: "Failed to submit score. Please try again.",
       teamsCompleted: "teams completed",
-      questionXOfY: "Question"
+      questionXOfY: "Question",
+      readyToPlay: "Ready to Play?",
+      gameSessionDescription: "Create a new game session that all 8 teams can join. Once created, you'll get a shareable link for everyone to use.",
+      creatingGame: "Creating Game...",
+      launchNewGame: "Launch New Game",
+      howItWorks: "How it works:",
+      step1: "Click \"Launch New Game\" to create a session",
+      step2: "Share the generated link with all teams",
+      step3: "Each team joins using the same link",
+      step4: "See integrated results from all teams"
     },
     es: {
       title: "Implementando Gobernanza de Datos",
@@ -299,7 +308,16 @@ const DataGovernanceMatchingGame = () => {
       scoreSubmittedSuccess: "Puntuación enviada exitosamente, por favor haga clic en OK para ver el tablero de puntuaciones en vivo",
       scoreSubmissionFailed: "Error al enviar puntuación. Por favor intente de nuevo.",
       teamsCompleted: "equipos completados",
-      questionXOfY: "Pregunta"
+      questionXOfY: "Pregunta",
+      readyToPlay: "¿Listo para Jugar?",
+      gameSessionDescription: "Crea una nueva sesión de juego a la que pueden unirse los 8 equipos. Una vez creada, obtendrás un enlace compartible para que todos lo usen.",
+      creatingGame: "Creando Juego...",
+      launchNewGame: "Lanzar Nuevo Juego",
+      howItWorks: "Cómo funciona:",
+      step1: "Haz clic en \"Lanzar Nuevo Juego\" para crear una sesión",
+      step2: "Comparte el enlace generado con todos los equipos",
+      step3: "Cada equipo se une usando el mismo enlace",
+      step4: "Ve los resultados integrados de todos los equipos"
     },
     pt: {
       title: "Implementando Governança de Dados",
@@ -350,7 +368,16 @@ const DataGovernanceMatchingGame = () => {
       scoreSubmittedSuccess: "Pontuação enviada com sucesso, por favor clique em OK para ver o painel de pontuações ao vivo",
       scoreSubmissionFailed: "Falha ao enviar pontuação. Por favor tente novamente.",
       teamsCompleted: "equipes concluídas",
-      questionXOfY: "Pergunta"
+      questionXOfY: "Pergunta",
+      readyToPlay: "Pronto para Jogar?",
+      gameSessionDescription: "Crie uma nova sessão de jogo à qual todas as 8 equipes podem se juntar. Uma vez criada, você obterá um link compartilhável para todos usarem.",
+      creatingGame: "Criando Jogo...",
+      launchNewGame: "Lançar Novo Jogo",
+      howItWorks: "Como funciona:",
+      step1: "Clique em \"Lançar Novo Jogo\" para criar uma sessão",
+      step2: "Compartilhe o link gerado com todas as equipes",
+      step3: "Cada equipe se junta usando o mesmo link",
+      step4: "Veja os resultados integrados de todas as equipes"
     }
   };
 
@@ -737,10 +764,10 @@ const DataGovernanceMatchingGame = () => {
               <div className="mb-8">
                 <Trophy className="w-24 h-24 text-purple-600 mx-auto mb-6" />
                 <h2 className="text-4xl font-bold text-slate-800 mb-4">
-                  Ready to Play?
+                  {text.readyToPlay}
                 </h2>
                 <p className="text-xl text-slate-600 leading-relaxed mb-8">
-                  Create a new game session that all 8 teams can join. Once created, you'll get a shareable link for everyone to use.
+                  {text.gameSessionDescription}
                 </p>
               </div>
 
@@ -756,12 +783,12 @@ const DataGovernanceMatchingGame = () => {
                 {creatingSession ? (
                   <>
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-                    Creating Game...
+                    {text.creatingGame}
                   </>
                 ) : (
                   <>
                     <Trophy className="w-8 h-8" />
-                    Launch New Game
+                    {text.launchNewGame}
                   </>
                 )}
               </button>
@@ -769,13 +796,13 @@ const DataGovernanceMatchingGame = () => {
               <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
                 <div className="flex items-center gap-2 text-blue-700 text-sm font-medium mb-2">
                   <Users className="w-4 h-4" />
-                  How it works:
+                  {text.howItWorks}
                 </div>
                 <ul className="text-sm text-blue-600 text-left space-y-1">
-                  <li>• Click "Launch New Game" to create a session</li>
-                  <li>• Share the generated link with all teams</li>
-                  <li>• Each team joins using the same link</li>
-                  <li>• See integrated results from all teams</li>
+                  <li>• {text.step1}</li>
+                  <li>• {text.step2}</li>
+                  <li>• {text.step3}</li>
+                  <li>• {text.step4}</li>
                 </ul>
               </div>
             </div>
