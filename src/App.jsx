@@ -241,7 +241,14 @@ const DataGovernanceMatchingGame = () => {
       completionTime: "Completion Time",
       viewScoreboard: "View Live Scoreboard",
       teamRanking: "Team Ranking",
-      loading: "Loading results..."
+      loading: "Loading results...",
+      backToTeams: "Back to Teams",
+      submitScore: "Submit Score",
+      timeLeft: "Time Left",
+      scoreSubmittedSuccess: "Score successfully submitted, please click OK to see the live score dashboard",
+      scoreSubmissionFailed: "Failed to submit score. Please try again.",
+      teamsCompleted: "teams completed",
+      questionXOfY: "Question"
     },
     es: {
       title: "Implementando Gobernanza de Datos",
@@ -285,7 +292,14 @@ const DataGovernanceMatchingGame = () => {
       completionTime: "Tiempo de Finalización",
       viewScoreboard: "Ver Marcador en Vivo",
       teamRanking: "Clasificación de Equipos",
-      loading: "Cargando resultados..."
+      loading: "Cargando resultados...",
+      backToTeams: "Volver a Equipos",
+      submitScore: "Enviar Puntuación",
+      timeLeft: "Tiempo Restante",
+      scoreSubmittedSuccess: "Puntuación enviada exitosamente, por favor haga clic en OK para ver el tablero de puntuaciones en vivo",
+      scoreSubmissionFailed: "Error al enviar puntuación. Por favor intente de nuevo.",
+      teamsCompleted: "equipos completados",
+      questionXOfY: "Pregunta"
     },
     pt: {
       title: "Implementando Governança de Dados",
@@ -329,7 +343,14 @@ const DataGovernanceMatchingGame = () => {
       completionTime: "Tempo de Conclusão",
       viewScoreboard: "Ver Placar ao Vivo",
       teamRanking: "Classificação das Equipes",
-      loading: "Carregando resultados..."
+      loading: "Carregando resultados...",
+      backToTeams: "Voltar às Equipes",
+      submitScore: "Enviar Pontuação",
+      timeLeft: "Tempo Restante",
+      scoreSubmittedSuccess: "Pontuação enviada com sucesso, por favor clique em OK para ver o painel de pontuações ao vivo",
+      scoreSubmissionFailed: "Falha ao enviar pontuação. Por favor tente novamente.",
+      teamsCompleted: "equipes concluídas",
+      questionXOfY: "Pergunta"
     }
   };
 
@@ -658,7 +679,7 @@ const DataGovernanceMatchingGame = () => {
                     {text.waitingForTeams}
                   </div>
                   <div className="text-sm text-slate-400 mt-2">
-                    {globalScoreboard.length}/8 teams completed
+{globalScoreboard.length}/8 {text.teamsCompleted}
                   </div>
                 </div>
               )}
@@ -678,7 +699,7 @@ const DataGovernanceMatchingGame = () => {
                 className="bg-slate-600 text-white py-4 px-8 rounded-xl font-bold text-lg hover:bg-slate-700 transition-all duration-300 flex items-center justify-center gap-3 shadow-xl transform hover:scale-105"
               >
                 <Users className="w-5 h-5" />
-                Back to Teams
+{text.backToTeams}
               </button>
             </div>
           </div>
@@ -981,7 +1002,7 @@ const DataGovernanceMatchingGame = () => {
                   onClick={() => setTeamSelectionStep(true)}
                   className="bg-slate-500 text-white py-5 px-8 rounded-xl font-bold text-xl hover:bg-slate-600 transition-all duration-300 shadow-xl transform hover:scale-105"
                 >
-                  ← Back to Teams
+← {text.backToTeams}
                 </button>
                 <button
                   onClick={startGame}
@@ -1103,19 +1124,19 @@ const DataGovernanceMatchingGame = () => {
 
                   if (success) {
                     // Show success message and wait for user to click OK
-                    const userConfirmed = confirm('✅ Score successfully submitted, please click OK to see the live score dashboard');
+                    const userConfirmed = confirm(`✅ ${text.scoreSubmittedSuccess}`);
                     if (userConfirmed) {
                       // Redirect to scoreboard after user clicks OK
                       setShowScoreboard(true);
                     }
                   } else {
-                    alert('❌ Failed to submit score. Please try again.');
+                    alert(`❌ ${text.scoreSubmissionFailed}`);
                   }
                 }}
                 className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-green-700 hover:to-blue-700 transition-all duration-300 flex items-center justify-center gap-3 shadow-xl transform hover:scale-105"
               >
                 <Trophy className="w-5 h-5" />
-                Submit Score
+{text.submitScore}
               </button>
 
               <button
@@ -1161,7 +1182,7 @@ const DataGovernanceMatchingGame = () => {
               <span className="text-xl font-bold">{formatTime(timeLeft)}</span>
             </div>
             <div className="text-purple-200 text-sm mt-2">
-              Question {currentQuestion + 1} of {questions.length}
+{text.questionXOfY} {currentQuestion + 1} of {questions.length}
             </div>
           </div>
         </div>
