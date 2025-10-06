@@ -47,14 +47,44 @@ const DataGovernanceMatchingGame = () => {
   }, []);
 
   const teams = [
-    { id: 1, name: 'Team Alpha', color: 'from-red-500 to-pink-500', emoji: '🚀' },
-    { id: 2, name: 'Team Beta', color: 'from-blue-500 to-cyan-500', emoji: '⚡' },
-    { id: 3, name: 'Team Gamma', color: 'from-green-500 to-emerald-500', emoji: '🌟' },
-    { id: 4, name: 'Team Delta', color: 'from-purple-500 to-violet-500', emoji: '🎯' },
-    { id: 5, name: 'Team Epsilon', color: 'from-orange-500 to-amber-500', emoji: '🔥' },
-    { id: 6, name: 'Team Zeta', color: 'from-indigo-500 to-blue-600', emoji: '💎' },
-    { id: 7, name: 'Team Eta', color: 'from-pink-500 to-rose-500', emoji: '⭐' },
-    { id: 8, name: 'Team Theta', color: 'from-teal-500 to-cyan-600', emoji: '🏆' }
+    { id: 1, name: 'Calgary', color: 'from-red-500 to-pink-500', emoji: '🏔️' },
+    { id: 2, name: 'Vancouver', color: 'from-blue-500 to-cyan-500', emoji: '🌊' },
+    { id: 3, name: 'Winnipeg', color: 'from-green-500 to-emerald-500', emoji: '🌾' },
+    { id: 4, name: 'Ottawa', color: 'from-purple-500 to-violet-500', emoji: '🏛️' },
+    { id: 5, name: 'Miami', color: 'from-orange-500 to-amber-500', emoji: '🏖️' },
+    { id: 6, name: 'Largo', color: 'from-indigo-500 to-blue-600', emoji: '🌴' },
+    { id: 7, name: 'Buckeye', color: 'from-pink-500 to-rose-500', emoji: '🌰' },
+    { id: 8, name: 'Oklahoma City', color: 'from-teal-500 to-cyan-600', emoji: '🤠' },
+    { id: 9, name: 'Dallas', color: 'from-yellow-500 to-orange-500', emoji: '⭐' },
+    { id: 10, name: 'Sandy Springs', color: 'from-emerald-500 to-teal-500', emoji: '💧' },
+    { id: 11, name: 'Evanston', color: 'from-violet-500 to-purple-500', emoji: '🎓' },
+    { id: 12, name: 'Columbia', color: 'from-cyan-500 to-blue-500', emoji: '🗽' },
+    { id: 13, name: 'Providence', color: 'from-rose-500 to-pink-500', emoji: '⚓' },
+    { id: 14, name: 'Long Beach', color: 'from-amber-500 to-yellow-500', emoji: '🏄' },
+    { id: 15, name: 'Wauwatosa', color: 'from-lime-500 to-green-500', emoji: '🧀' },
+    { id: 16, name: 'Los Angeles', color: 'from-fuchsia-500 to-pink-500', emoji: '🎬' },
+    { id: 17, name: 'Anchorage', color: 'from-blue-600 to-indigo-600', emoji: '❄️' },
+    { id: 18, name: 'Normal', color: 'from-green-600 to-emerald-600', emoji: '🌽' },
+    { id: 19, name: 'Durham', color: 'from-purple-600 to-violet-600', emoji: '🏀' },
+    { id: 20, name: 'San Diego', color: 'from-orange-600 to-red-500', emoji: '🌞' },
+    { id: 21, name: 'Fairfield', color: 'from-teal-600 to-cyan-600', emoji: '🌸' },
+    { id: 22, name: 'North Port', color: 'from-slate-500 to-gray-600', emoji: '⚓' },
+    { id: 23, name: 'San Jose', color: 'from-red-600 to-pink-600', emoji: '💻' },
+    { id: 24, name: 'Corona', color: 'from-yellow-600 to-orange-600', emoji: '👑' },
+    { id: 25, name: 'Westerville', color: 'from-emerald-600 to-teal-600', emoji: '🌳' },
+    { id: 26, name: 'Seattle', color: 'from-violet-600 to-purple-600', emoji: '☕' },
+    { id: 27, name: 'Mesa', color: 'from-cyan-600 to-blue-600', emoji: '🏜️' },
+    { id: 28, name: 'Montego Bay', color: 'from-rose-600 to-pink-600', emoji: '🏝️' },
+    { id: 29, name: 'Mogi das Cruzes', color: 'from-amber-600 to-yellow-600', emoji: '🌿' },
+    { id: 30, name: 'Belo Horizonte', color: 'from-lime-600 to-green-600', emoji: '⛰️' },
+    { id: 31, name: 'San Fernando', color: 'from-fuchsia-600 to-pink-600', emoji: '🌺' },
+    { id: 32, name: 'Providencia', color: 'from-blue-700 to-indigo-700', emoji: '🏔️' },
+    { id: 33, name: 'Rancagua', color: 'from-green-700 to-emerald-700', emoji: '🍇' },
+    { id: 34, name: 'Mercedes', color: 'from-purple-700 to-violet-700', emoji: '🚗' },
+    { id: 35, name: 'Reconquista', color: 'from-orange-700 to-red-600', emoji: '🛡️' },
+    { id: 36, name: 'Comodoro Rivadavia', color: 'from-teal-700 to-cyan-700', emoji: '🛢️' },
+    { id: 37, name: 'San Juan', color: 'from-slate-600 to-gray-700', emoji: '🏛️' },
+    { id: 38, name: 'Mexico City', color: 'from-red-700 to-pink-700', emoji: '🌶️' }
   ];
 
   const questionsData = {
@@ -250,7 +280,7 @@ const DataGovernanceMatchingGame = () => {
       teamsCompleted: "teams completed",
       questionXOfY: "Question",
       readyToPlay: "Ready to Play?",
-      gameSessionDescription: "Create a new game session that all 8 teams can join. Once created, you'll get a shareable link for everyone to use.",
+      gameSessionDescription: "Create a new game session that all 38 teams can join. Once created, you'll get a shareable link for everyone to use.",
       creatingGame: "Creating Game...",
       launchNewGame: "Launch New Game",
       howItWorks: "How it works:",
@@ -310,7 +340,7 @@ const DataGovernanceMatchingGame = () => {
       teamsCompleted: "equipos completados",
       questionXOfY: "Pregunta",
       readyToPlay: "¿Listo para Jugar?",
-      gameSessionDescription: "Crea una nueva sesión de juego a la que pueden unirse los 8 equipos. Una vez creada, obtendrás un enlace compartible para que todos lo usen.",
+      gameSessionDescription: "Crea una nueva sesión de juego a la que pueden unirse los 38 equipos. Una vez creada, obtendrás un enlace compartible para que todos lo usen.",
       creatingGame: "Creando Juego...",
       launchNewGame: "Lanzar Nuevo Juego",
       howItWorks: "Cómo funciona:",
@@ -370,7 +400,7 @@ const DataGovernanceMatchingGame = () => {
       teamsCompleted: "equipes concluídas",
       questionXOfY: "Pergunta",
       readyToPlay: "Pronto para Jogar?",
-      gameSessionDescription: "Crie uma nova sessão de jogo à qual todas as 8 equipes podem se juntar. Uma vez criada, você obterá um link compartilhável para todos usarem.",
+      gameSessionDescription: "Crie uma nova sessão de jogo à qual todas as 38 equipes podem se juntar. Uma vez criada, você obterá um link compartilhável para todos usarem.",
       creatingGame: "Criando Jogo...",
       launchNewGame: "Lançar Novo Jogo",
       howItWorks: "Como funciona:",
@@ -628,7 +658,7 @@ const DataGovernanceMatchingGame = () => {
 
             <div className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white px-8 py-4 rounded-2xl inline-flex items-center gap-3 font-bold text-lg shadow-xl">
               <Trophy className="w-6 h-6" />
-              {globalScoreboard.length === 8 ? text.finalRankings : text.waitingForTeams}
+              {globalScoreboard.length === 38 ? text.finalRankings : text.waitingForTeams}
             </div>
           </div>
 
@@ -700,13 +730,13 @@ const DataGovernanceMatchingGame = () => {
               )}
 
               {/* Waiting for more teams */}
-              {globalScoreboard.length < 8 && globalScoreboard.length > 0 && (
+              {globalScoreboard.length < 38 && globalScoreboard.length > 0 && (
                 <div className="text-center py-6 border-2 border-dashed border-slate-300 rounded-2xl">
                   <div className="text-slate-500 text-lg">
                     {text.waitingForTeams}
                   </div>
                   <div className="text-sm text-slate-400 mt-2">
-{globalScoreboard.length}/8 {text.teamsCompleted}
+{globalScoreboard.length}/38 {text.teamsCompleted}
                   </div>
                 </div>
               )}
@@ -882,7 +912,7 @@ const DataGovernanceMatchingGame = () => {
               )}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 max-h-96 overflow-y-auto">
               {teams.map((team) => {
                 const teamActive = isTeamActive(team.id);
                 const teamCompleted = globalScoreboard.some(result => result.teamId === team.id);
@@ -892,15 +922,15 @@ const DataGovernanceMatchingGame = () => {
                     key={team.id}
                     onClick={() => !teamActive && !teamCompleted && selectTeam(team)}
                     disabled={teamActive || teamCompleted}
-                    className={`group relative overflow-hidden rounded-2xl p-6 text-white font-bold text-lg transition-all duration-300 transform shadow-xl ${
+                    className={`group relative overflow-hidden rounded-xl p-3 text-white font-bold text-sm transition-all duration-300 transform shadow-lg ${
                       teamActive || teamCompleted
                         ? `bg-gradient-to-br ${team.color} opacity-60 cursor-not-allowed`
-                        : `bg-gradient-to-br ${team.color} hover:scale-105 hover:shadow-2xl`
+                        : `bg-gradient-to-br ${team.color} hover:scale-105 hover:shadow-xl`
                     }`}
                   >
-                    <div className="flex flex-col items-center gap-3">
-                      <span className="text-3xl">{team.emoji}</span>
-                      <span className="text-center leading-tight">{team.name}</span>
+                    <div className="flex flex-col items-center gap-2">
+                      <span className="text-2xl">{team.emoji}</span>
+                      <span className="text-center leading-tight text-xs">{team.name}</span>
                     </div>
 
                     {/* Status Indicators */}

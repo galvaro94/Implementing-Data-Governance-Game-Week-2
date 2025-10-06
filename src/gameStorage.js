@@ -14,7 +14,7 @@ export class GameStorage {
         globalScoreboard: [],
         teamSessions: {},
         gameSettings: {
-          maxTeams: 8,
+          maxTeams: 38,
           questionsPerGame: 4,
           timeLimit: 300
         },
