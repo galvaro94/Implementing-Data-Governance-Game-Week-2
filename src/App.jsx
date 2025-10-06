@@ -47,44 +47,44 @@ const DataGovernanceMatchingGame = () => {
   }, []);
 
   const teams = [
-    { id: 1, name: 'Calgary', color: 'from-red-500 to-pink-500', emoji: '🏔️' },
-    { id: 2, name: 'Vancouver', color: 'from-blue-500 to-cyan-500', emoji: '🌊' },
-    { id: 3, name: 'Winnipeg', color: 'from-green-500 to-emerald-500', emoji: '🌾' },
-    { id: 4, name: 'Ottawa', color: 'from-purple-500 to-violet-500', emoji: '🏛️' },
-    { id: 5, name: 'Miami', color: 'from-orange-500 to-amber-500', emoji: '🏖️' },
-    { id: 6, name: 'Largo', color: 'from-indigo-500 to-blue-600', emoji: '🌴' },
-    { id: 7, name: 'Buckeye', color: 'from-pink-500 to-rose-500', emoji: '🌰' },
-    { id: 8, name: 'Oklahoma City', color: 'from-teal-500 to-cyan-600', emoji: '🤠' },
-    { id: 9, name: 'Dallas', color: 'from-yellow-500 to-orange-500', emoji: '⭐' },
-    { id: 10, name: 'Sandy Springs', color: 'from-emerald-500 to-teal-500', emoji: '💧' },
-    { id: 11, name: 'Evanston', color: 'from-violet-500 to-purple-500', emoji: '🎓' },
-    { id: 12, name: 'Columbia', color: 'from-cyan-500 to-blue-500', emoji: '🗽' },
-    { id: 13, name: 'Providence', color: 'from-rose-500 to-pink-500', emoji: '⚓' },
-    { id: 14, name: 'Long Beach', color: 'from-amber-500 to-yellow-500', emoji: '🏄' },
-    { id: 15, name: 'Wauwatosa', color: 'from-lime-500 to-green-500', emoji: '🧀' },
-    { id: 16, name: 'Los Angeles', color: 'from-fuchsia-500 to-pink-500', emoji: '🎬' },
-    { id: 17, name: 'Anchorage', color: 'from-blue-600 to-indigo-600', emoji: '❄️' },
-    { id: 18, name: 'Normal', color: 'from-green-600 to-emerald-600', emoji: '🌽' },
-    { id: 19, name: 'Durham', color: 'from-purple-600 to-violet-600', emoji: '🏀' },
-    { id: 20, name: 'San Diego', color: 'from-orange-600 to-red-500', emoji: '🌞' },
-    { id: 21, name: 'Fairfield', color: 'from-teal-600 to-cyan-600', emoji: '🌸' },
-    { id: 22, name: 'North Port', color: 'from-slate-500 to-gray-600', emoji: '⚓' },
-    { id: 23, name: 'San Jose', color: 'from-red-600 to-pink-600', emoji: '💻' },
-    { id: 24, name: 'Corona', color: 'from-yellow-600 to-orange-600', emoji: '👑' },
-    { id: 25, name: 'Westerville', color: 'from-emerald-600 to-teal-600', emoji: '🌳' },
-    { id: 26, name: 'Seattle', color: 'from-violet-600 to-purple-600', emoji: '☕' },
-    { id: 27, name: 'Mesa', color: 'from-cyan-600 to-blue-600', emoji: '🏜️' },
-    { id: 28, name: 'Montego Bay', color: 'from-rose-600 to-pink-600', emoji: '🏝️' },
-    { id: 29, name: 'Mogi das Cruzes', color: 'from-amber-600 to-yellow-600', emoji: '🌿' },
-    { id: 30, name: 'Belo Horizonte', color: 'from-lime-600 to-green-600', emoji: '⛰️' },
-    { id: 31, name: 'San Fernando', color: 'from-fuchsia-600 to-pink-600', emoji: '🌺' },
-    { id: 32, name: 'Providencia', color: 'from-blue-700 to-indigo-700', emoji: '🏔️' },
-    { id: 33, name: 'Rancagua', color: 'from-green-700 to-emerald-700', emoji: '🍇' },
-    { id: 34, name: 'Mercedes', color: 'from-purple-700 to-violet-700', emoji: '🚗' },
-    { id: 35, name: 'Reconquista', color: 'from-orange-700 to-red-600', emoji: '🛡️' },
-    { id: 36, name: 'Comodoro Rivadavia', color: 'from-teal-700 to-cyan-700', emoji: '🛢️' },
-    { id: 37, name: 'San Juan', color: 'from-slate-600 to-gray-700', emoji: '🏛️' },
-    { id: 38, name: 'Mexico City', color: 'from-red-700 to-pink-700', emoji: '🌶️' }
+    { id: 1, name: 'Calgary', color: 'from-red-500 to-pink-500' },
+    { id: 2, name: 'Vancouver', color: 'from-blue-500 to-cyan-500' },
+    { id: 3, name: 'Winnipeg', color: 'from-green-500 to-emerald-500' },
+    { id: 4, name: 'Ottawa', color: 'from-purple-500 to-violet-500' },
+    { id: 5, name: 'Miami', color: 'from-orange-500 to-amber-500' },
+    { id: 6, name: 'Largo', color: 'from-indigo-500 to-blue-600' },
+    { id: 7, name: 'Buckeye', color: 'from-pink-500 to-rose-500' },
+    { id: 8, name: 'Oklahoma City', color: 'from-teal-500 to-cyan-600' },
+    { id: 9, name: 'Dallas', color: 'from-yellow-500 to-orange-500' },
+    { id: 10, name: 'Sandy Springs', color: 'from-emerald-500 to-teal-500' },
+    { id: 11, name: 'Evanston', color: 'from-violet-500 to-purple-500' },
+    { id: 12, name: 'Columbia', color: 'from-cyan-500 to-blue-500' },
+    { id: 13, name: 'Providence', color: 'from-rose-500 to-pink-500' },
+    { id: 14, name: 'Long Beach', color: 'from-amber-500 to-yellow-500' },
+    { id: 15, name: 'Wauwatosa', color: 'from-lime-500 to-green-500' },
+    { id: 16, name: 'Los Angeles', color: 'from-fuchsia-500 to-pink-500' },
+    { id: 17, name: 'Anchorage', color: 'from-blue-600 to-indigo-600' },
+    { id: 18, name: 'Normal', color: 'from-green-600 to-emerald-600' },
+    { id: 19, name: 'Durham', color: 'from-purple-600 to-violet-600' },
+    { id: 20, name: 'San Diego', color: 'from-orange-600 to-red-500' },
+    { id: 21, name: 'Fairfield', color: 'from-teal-600 to-cyan-600' },
+    { id: 22, name: 'North Port', color: 'from-slate-500 to-gray-600' },
+    { id: 23, name: 'San Jose', color: 'from-red-600 to-pink-600' },
+    { id: 24, name: 'Corona', color: 'from-yellow-600 to-orange-600' },
+    { id: 25, name: 'Westerville', color: 'from-emerald-600 to-teal-600' },
+    { id: 26, name: 'Seattle', color: 'from-violet-600 to-purple-600' },
+    { id: 27, name: 'Mesa', color: 'from-cyan-600 to-blue-600' },
+    { id: 28, name: 'Montego Bay', color: 'from-rose-600 to-pink-600' },
+    { id: 29, name: 'Mogi das Cruzes', color: 'from-amber-600 to-yellow-600' },
+    { id: 30, name: 'Belo Horizonte', color: 'from-lime-600 to-green-600' },
+    { id: 31, name: 'San Fernando', color: 'from-fuchsia-600 to-pink-600' },
+    { id: 32, name: 'Providencia', color: 'from-blue-700 to-indigo-700' },
+    { id: 33, name: 'Rancagua', color: 'from-green-700 to-emerald-700' },
+    { id: 34, name: 'Mercedes', color: 'from-purple-700 to-violet-700' },
+    { id: 35, name: 'Reconquista', color: 'from-orange-700 to-red-600' },
+    { id: 36, name: 'Comodoro Rivadavia', color: 'from-teal-700 to-cyan-700' },
+    { id: 37, name: 'San Juan', color: 'from-slate-600 to-gray-700' },
+    { id: 38, name: 'Mexico City', color: 'from-red-700 to-pink-700' }
   ];
 
   const questionsData = {
@@ -928,9 +928,8 @@ const DataGovernanceMatchingGame = () => {
                         : `bg-gradient-to-br ${team.color} hover:scale-105 hover:shadow-xl`
                     }`}
                   >
-                    <div className="flex flex-col items-center gap-2">
-                      <span className="text-2xl">{team.emoji}</span>
-                      <span className="text-center leading-tight text-xs">{team.name}</span>
+                    <div className="flex flex-col items-center justify-center h-full">
+                      <span className="text-center leading-tight text-sm font-bold">{team.name}</span>
                     </div>
 
                     {/* Status Indicators */}
