@@ -1,38 +1,26 @@
-# Data Governance Game - Week 4: Equity in Action
+# GovEx Academy Data Governance Game
 
-An interactive learning experience that challenges participants to make data governance decisions through equity-focused scenarios with real-time AI feedback.
+An interactive, team-based challenge designed for the GovEx Academy Data Governance course. Teams compete to correctly match city scenarios with appropriate data governance models.
 
-## 🎯 Features
+## 🎮 Game Features
 
-### Two Complete Scenarios
-- **City of Saturn**: Beach tourism vs climate resilience with equity considerations
-- **City of Mercury**: Suburban infrastructure prioritization with demographic analysis
-
-### AI-Powered Learning
-- **Real-time feedback** from Claude AI on all responses
-- **4-category scoring system**: Completeness (25%), Equity Focus (35%), Systems Thinking (25%), Data Awareness (15%)
-- **Comprehensive analysis** with personalized insights on final reflection screen
-
-### Interactive Elements
-- **Timed questions** with auto-submission
-- **Drag-and-drop ranking** for infrastructure prioritization
-- **Demographics visualization** for decision-making context
-- **Cross-device scoring** via Supabase for team collaboration
-
-### Enhanced Dashboard
-- **Spider chart** visualization of skill development
-- **Badge system** (Equity Champion/Aware/Learner)
-- **Scenario comparison** bars
-- **Completion certificates** with timestamps
+- **38 Unique Teams**: Each with distinct colors and city names
+- **Real-time Collaboration**: Teams can play simultaneously with live scoreboard updates
+- **Multi-language Support**: Available in English, Spanish, and Portuguese
+- **Live Scoreboard**: See how your team ranks against others in real-time
+- **Persistent Storage**: Game progress and results are saved across browser sessions
+- **Team Status Tracking**: Visual indicators show which teams are playing or have completed
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Node.js 16+
-- Claude API key from [console.anthropic.com](https://console.anthropic.com)
+### **🌐 Play Online (Ready Now!)**
+🎮 **Live Game URL**: https://galvaro94.github.io/Implementing-Data-Governance-Game-Week-2/
 
-### Installation
+**Latest Deployment**: Week 2 Version - Clean and Working ✅
 
+Share this URL with all 38 teams to start playing immediately!
+
+### **📥 Local Development**
 1. **Clone the repository**
    ```bash
    git clone https://github.com/galvaro94/Implementing-Data-Governance-Game-Week-2.git
@@ -44,91 +32,126 @@ An interactive learning experience that challenges participants to make data gov
    npm install
    ```
 
-3. **Set up environment variables**
-   ```bash
-   echo "VITE_CLAUDE_API_KEY=your_api_key_here" > .env
-   ```
-
-4. **Start the development server**
+3. **Start the development server**
    ```bash
    npm run dev
    ```
 
-5. **Open in browser**
-   Navigate to `http://localhost:3000/Implementing-Data-Governance-Game-Week-2/`
+4. **Open the game**
+   - Navigate to `http://localhost:3001`
+   - Share this URL with all 38 teams
 
-## 🎮 How to Play
+## 🎯 How to Play
 
-1. **Select Week 4** from the main menu
-2. **Complete City of Saturn scenario** (3.5 minutes)
-   - Answer equity-focused questions about tourism vs climate resilience
-   - Receive AI feedback on each response
-3. **Complete City of Mercury scenario** (3.5 minutes)
-   - Answer data governance questions
-   - Rank infrastructure priorities using drag-and-drop
-4. **View comprehensive analysis** with AI-generated insights
-5. **Explore enhanced dashboard** with skill breakdown and badges
+### For Instructors:
+1. Share the game URL with all 38 teams
+2. Teams will select their team name from the available options
+3. Monitor progress on the live scoreboard
+4. Use "Reset All Games" to start fresh sessions
 
-## 🏗️ Technical Architecture
+### For Teams:
+1. Visit the provided URL
+2. Select your team from the 38 available options
+3. Enter team member names
+4. Complete the 4-question challenge within 5 minutes
+5. View individual results and team ranking on the live scoreboard
 
-### Frontend
-- **React 18** with hooks-based state management
-- **Vite** for fast development and building
-- **Native HTML5 drag-and-drop** for ranking interface
+## 🏆 Scoring System
 
-### AI Integration
-- **Claude API** for real-time feedback and comprehensive analysis
-- **Structured prompting** for consistent 4-category scoring
-- **Graceful error handling** with meaningful fallbacks
+- **4 Questions**: Each worth 1 point
+- **Time Bonus**: Faster completion breaks ties
+- **Badge System**: Teams with 3+ correct answers earn badges
+- **Live Rankings**: Rankings update in real-time as teams complete
 
-### Data Persistence
-- **Supabase** for cross-device score synchronization
-- **localStorage** for local backup and reliability
-- **Real-time polling** for immediate updates
+## 🛠 Technical Features
 
-## 🔧 Configuration
+### Real-time Synchronization
+- Uses localStorage for cross-tab synchronization
+- Automatic updates when other teams complete games
+- Session tracking to prevent team conflicts
 
-### Environment Variables
-- `VITE_CLAUDE_API_KEY`: Your Claude API key for AI feedback
+### Responsive Design
+- Works on desktop, tablet, and mobile devices
+- Optimized for classroom presentation and individual use
 
-### Supabase Configuration
-The game uses a pre-configured Supabase instance for cross-device functionality. To use your own:
+### Deployment Ready
+- Production build optimized
+- Static hosting compatible (GitHub Pages, Netlify, Vercel)
+- No backend server required
 
-1. Create a Supabase project
-2. Update credentials in `src/supabaseStorage.js`
-3. Create `game_sessions` table with required schema
+## 📱 Deployment
 
-## 🌍 Multi-language Support
+### Option 1: GitHub Pages
+```bash
+npm run build
+# Deploy the dist/ folder to GitHub Pages
+```
 
-The game framework supports English, Spanish, and Portuguese with language switching capabilities.
+### Option 2: Netlify
+1. Connect your GitHub repository
+2. Build command: `npm run build`
+3. Publish directory: `dist`
 
-## 📊 Scoring System
+### Option 3: Vercel
+1. Import your GitHub repository
+2. Framework preset: Vite
+3. Deploy automatically
 
-### Category Weights
-- **Completeness**: 25% - How thoroughly participants address questions
-- **Equity Focus**: 35% - Consideration of marginalized communities and fairness
-- **Systems Thinking**: 25% - Understanding connections and broader implications
-- **Data Awareness**: 15% - Grasp of data governance principles
+## 🎨 Customization
 
-### Badge Levels
-- **Equity Champion**: 80%+ equity-focused score
-- **Equity Aware**: 60-79% equity-focused score
-- **Equity Learner**: Below 60% equity-focused score
+### Adding Teams
+Edit `src/App.jsx` to modify the teams array:
+```javascript
+const teams = [
+  { id: 1, name: 'Team Name', color: 'from-color-500 to-color-600' },
+  // Add more teams...
+];
+```
+
+### Modifying Questions
+Update the `questionsData` object in `src/App.jsx` for different scenarios and answers.
+
+### Language Support
+Add new languages by extending the `textData` object with translations.
+
+## 🔧 Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## 📊 Data Storage
+
+The game uses browser localStorage for data persistence:
+- Team results and rankings
+- Active team sessions
+- Game progress tracking
+
+Data is automatically synchronized across browser tabs and windows.
 
 ## 🤝 Contributing
 
-This project was developed for the GovEx Academy Data Governance program. Contributions and improvements are welcome.
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
-## 📄 License
+## 📧 Support
 
-Educational use for data governance training programs.
-
-## 🔗 Related
-
-- Week 2 game features basic scenarios and cross-device scoring
-- Built with accessibility and educational effectiveness in mind
-- Designed for cohort-based learning with real-time collaboration
+For questions or support regarding the GovEx Academy Data Governance Game, please contact the course instructors.
 
 ---
 
-**Ready to explore data governance through equity-focused decision making!** 🚀
+**Built for GovEx Academy** - Johns Hopkins University
+Data Governance Course - Week 2: Models of Governance

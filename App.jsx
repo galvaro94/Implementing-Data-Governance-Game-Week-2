@@ -2152,15 +2152,9 @@ Write this as a reflective, encouraging assessment that helps them understand th
 
   // Week 4 Instructions Screen
   if (selectedWeek === '4' && week4ShowInstructions && !teamSelectionStep) {
-    console.log('Rendering Week 4 Instructions Screen');
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-900 to-teal-900 p-6">
         <div className="max-w-4xl mx-auto">
-          {/* Debug info */}
-          <div className="text-xs text-white mb-4">
-            Debug Instructions: selectedWeek={selectedWeek}, week4ShowInstructions={week4ShowInstructions ? 'YES' : 'NO'}, teamSelectionStep={teamSelectionStep ? 'YES' : 'NO'}
-          </div>
-
           {/* Language Toggle */}
           <div className="mb-6 flex justify-end">
             <LanguageToggle />
@@ -2236,10 +2230,8 @@ Write this as a reflective, encouraging assessment that helps them understand th
 
               <button
                 onClick={() => {
-                  console.log('Starting Week 4 game...');
                   setWeek4ShowInstructions(false);
                   setWeek4GameStarted(true);
-                  console.log('Week 4 game started, week4GameStarted should now be true');
                 }}
                 className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 px-8 rounded-xl font-bold text-xl hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 flex items-center justify-center gap-3 shadow-xl transform hover:scale-105"
               >
@@ -2272,11 +2264,11 @@ Write this as a reflective, encouraging assessment that helps them understand th
                 {text.week4GameTitle}
               </h1>
               <div className="flex items-center gap-3 mt-2">
-                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r ${selectedTeam?.color || 'from-emerald-500 to-teal-500'} text-white shadow-md`}>
-                  <span className="font-semibold">{selectedTeam?.name || 'Team'}</span>
+                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r ${selectedTeam?.color} text-white shadow-md`}>
+                  <span className="font-semibold">{selectedTeam?.name}</span>
                 </div>
                 <span className="text-emerald-200">|</span>
-                <span className="text-emerald-200 text-lg">{teamName || 'Player'}</span>
+                <span className="text-emerald-200 text-lg">{teamName}</span>
               </div>
             </div>
 
@@ -2313,10 +2305,6 @@ Write this as a reflective, encouraging assessment that helps them understand th
 
           {/* Scenario Content */}
           <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-10">
-            {/* Debug info */}
-            <div className="text-xs text-gray-500 mb-4">
-              Debug: Week4GameStarted={week4GameStarted ? 'YES' : 'NO'}, Scenario={week4CurrentScenario}, Saturn Q{saturnCurrentQuestion}, Text: {text.saturnScenarioTitle ? 'LOADED' : 'MISSING'}
-            </div>
             {week4CurrentScenario === 0 && (
               <div>
                 {/* Saturn Scenario Header */}
