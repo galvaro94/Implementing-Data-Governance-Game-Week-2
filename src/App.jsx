@@ -17,8 +17,8 @@ const DataGovernanceMatchingGame = () => {
   const [teamSelectionStep, setTeamSelectionStep] = useState(true);
   const [showScoreboard, setShowScoreboard] = useState(false);
   const [completionTime, setCompletionTime] = useState(null);
-  const [showGameLauncher, setShowGameLauncher] = useState(true);
-  const [gameSessionCreated, setGameSessionCreated] = useState(false);
+  const [showGameLauncher, setShowGameLauncher] = useState(false);
+  const [gameSessionCreated, setGameSessionCreated] = useState(true);
   const [creatingSession, setCreatingSession] = useState(false);
 
   // Use the storage hook
